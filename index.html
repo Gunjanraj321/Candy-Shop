@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candy Shop</title>
+</head>
+<body>
+    <form id="candyShopForm">
+        Item_name:
+        <input type="text" id="name" name="name" required>
+        Description:
+        <input type="text" id="description" name="description" required>
+        Price:
+        <input type="number" id="price" name="price" required>
+        Quantity:
+        <input type="number" id="quantity" name="quantity" required>
+
+        <button type="submit">Add Item</button>
+    </form>
+
+    <div id="itemList">
+
+    </div>
+    <div id="cartList"></div>
+    <script src="frontend.js"></script>
+</body>
+</html>
