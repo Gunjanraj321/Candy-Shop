@@ -1,5 +1,4 @@
-const apiUrl = "http://localhost:3000";
-
+const apiUrl = "https://localhost:3000";
 const form = document.getElementById("candyShopForm");
 const itemList = document.getElementById("itemList");
 const cartList = document.getElementById("cartList");
@@ -19,7 +18,7 @@ form.addEventListener("submit", async (event) => {
         const res = await fetch(`${apiUrl}/data`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/json" // Corrected typo here
+                "Content-Type": "application/json"
             },
             body: JSON.stringify(data),
         });
@@ -56,8 +55,27 @@ function fetchItemList() {
                 itemList.appendChild(itemElement);
             });
 
-            form.reset(); // Moved outside the forEach loop
+            form.reset();
         });
+}
+
+function fetchCartList() {
+    cartList.innerHTML="";
+
+    fetch(`${apiUrl}/cart`,{
+        method:'GET'
+    })
+    .then((res)=>res.json())
+    .then((cartItems)=>{
+        cartItems.forEach((cartItem)=>{
+            const cartItemElement = document.createElement("div");
+            cartItemElement.innerHTML= `
+            <p>${cartItem.name} -- ${cartItem.description} --- ${cartItem.price} (Quantity: ${cartItem.quantity})</p>`;
+            cartList.appendChild(cartItemElement);
+        })
+    })
+    .catch((err) => console.log("Error fetching cart items:", err));
+
 }
 
 function addToCart(item, quantity = 1) {
@@ -67,9 +85,26 @@ function addToCart(item, quantity = 1) {
         item.quantity -= quantity;
 
         var cartItemElement = document.createElement('div');
-        cartItemElement.innerHTML = `<p>${item.name} -- ${item.description} --- ${item.price} (Quantity: ${quantity})</p>`; // Corrected innerHtml
+        cartItemElement.innerHTML = `<p>${item.name} -- ${item.description} --- ${item.price} (Quantity: ${quantity})</p>`;
         cartList.appendChild(cartItemElement);
+
+        updateServerQuantity(item.Id, item.quantity);
     } else {
         alert("Not enough quantity available");
     }
+}
+
+function updateServerQuantity(itemId, newQuantity){
+    fetch(`${apiUrl}/data/${itemId}`,{
+        method:"Put",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body: JSON.stringify({ quantity : newQuantity}),
+    }).then((res)=>{
+        if(!res.ok){
+            console.log("error updating server")
+        }
+    })
+    .catch((err)=>console.log("error updating quantity on the server", err))
 }
