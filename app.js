@@ -27,6 +27,23 @@ connection.connect((err) => {
 
 app.use(express.static(path.join(__dirname,"public")));
 
+// app.get("/data/:id", (req, res) => {
+
+//     const itemId = req.params.id;
+//     //const quantity = req.body.quantity;
+//     console.log(itemId);
+//     connection.query("select * from items where id = ?",
+//     [itemId],(err, result)=>{
+//         if(err){
+//             console.log(err);
+//         }else{
+//             console.log(result[0]);
+//             res.json(result[0]);
+//         }
+//     }
+//     )
+// })
+
 app.get('/data', (req, res) => {
     connection.query('SELECT * FROM items', (err, results) => {
         if (err) {
@@ -41,12 +58,12 @@ app.get('/data', (req, res) => {
 app.post("/data", (req, res) => {
     const { itemName, description, price, quantity } = req.body; // Fixed typo
 
-    connection.query('INSERT INTO items (itemName, description, price, quantity) VALUES (?, ?, ?, ?)',
-        [itemName, description, price, quantity],
+    connection.query('INSERT INTO items (itemName, description, price) VALUES (?, ?, ?)',
+        [itemName, description, price],
         (err, results) => {
             if (err) {
                 console.error('Error adding item:', err); // Fixed variable name
-                res.status(500).json({ error: 'Internal Server Error' });
+               res.status(500).json({ error: 'Internal Server Error' });
             } else {
                 res.status(201).json({ message: 'Item added successfully' });
             }
@@ -68,6 +85,8 @@ app.put("/data/:id", (req, res) => {
             }
         });
 });
+
+
 
 app.listen(port, () => {
     console.log("server running");
