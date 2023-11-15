@@ -1,0 +1,49 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 20px;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+input, button {
+    margin-bottom: 10px;
+}
+
+#itemList, #cartList {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+/* Style for each item in the list */
+.item {
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+}
+
+/* Style for the submit button */
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Style for the submit button on hover */
+button:hover {
+    background-color: #45a049;
+}
+
+/* Style for the cart item */
+.cart-item {
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Additional styles as needed */
