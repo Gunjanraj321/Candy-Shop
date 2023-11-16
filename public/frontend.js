@@ -15,7 +15,6 @@ form.addEventListener("submit", async (event) => {
         itemName:    formData.get("name"),
         description: formData.get("description"),
         price:       formData.get("price"),
-        quantity:    formData.get("quantity"),
     };
     //using post method to retrieve data from form
     try {
@@ -54,7 +53,7 @@ async function fetchItemList(){
                 datas.forEach((data) => {
                     const itemElement = document.createElement("div");
                     itemElement.innerHTML = `
-                        <p>Name: ${data.itemName} --- Description: ${data.description} --- Price: ${data.price} --- Quantity : ${data.quantity} </p>
+                        <p>Name: ${data.itemName} -- Description: ${data.description} -- Price: ${data.price} </p>
                         <button onclick="updateQuantity(${data.id},1)">Buy 1</button>
                         <button onclick="updateQuantity(${data.id},2)">Buy 2</button>
                         <button onclick="updateQuantity(${data.id},3)">Buy 3</button>

@@ -15,12 +15,11 @@ const getData = (req, res) => {
 };
 
 const createData = (req, res) => {
-  const { itemName, description, price, quantity } = req.body;
+  const { itemName, description, price } = req.body;
   Item.create({
     itemName: itemName,
     description: description,
     price: price,
-    quantity: quantity,
   })
     .then((data) => {
       //Handle successful creation
