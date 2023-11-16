@@ -6,6 +6,6 @@ router.get('/data', dataController.getData);
 
 router.post("/data", dataController.createData);
 
-// router.put("/data/:id", dataController.updateData);
+router.put("/data/:id", dataController.updateData);
 
 module.exports = router;
