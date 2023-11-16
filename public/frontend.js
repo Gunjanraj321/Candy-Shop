@@ -15,6 +15,7 @@ form.addEventListener("submit", async (event) => {
         itemName:    formData.get("name"),
         description: formData.get("description"),
         price:       formData.get("price"),
+        quantity:    formData.get("quantity"),
     };
     //using post method to retrieve data from form
     try {
@@ -53,10 +54,10 @@ async function fetchItemList(){
                 datas.forEach((data) => {
                     const itemElement = document.createElement("div");
                     itemElement.innerHTML = `
-                        <p>Name: ${data.itemName} --- Description: ${data.description} --- Price: ${data.price} </p>
-                        <button onclick="updateServerQuantity(${data.id},1)">Buy 1</button>
-                        <button onclick="updateServerQuantity(${data.id},2)">Buy 2</button>
-                        <button onclick="updateServerQuantity(${data.id},3)">Buy 3</button>
+                        <p>Name: ${data.itemName} --- Description: ${data.description} --- Price: ${data.price} --- Quantity : ${data.quantity} </p>
+                        <button onclick="updateQuantity(${data.id},1)">Buy 1</button>
+                        <button onclick="updateQuantity(${data.id},2)">Buy 2</button>
+                        <button onclick="updateQuantity(${data.id},3)">Buy 3</button>
                         `;
                     itemList.appendChild(itemElement);
                         
@@ -65,7 +66,7 @@ async function fetchItemList(){
                         const cartItemElement = document.createElement("div");
                         cartItemElement.innerHTML= `
                         <p>${data.itemName} -- ${data.description} -- ${data.price} -- ${data.quantity} </p>
-                        <button onclick="updateServerQuantity(${data.id},-1)">Delete 1</button>`;
+                        <button onclick="updateQuantity(${data.id},-1)">Delete 1</button>`;
                         cartList.appendChild(cartItemElement);
                     } 
                 });
@@ -75,7 +76,7 @@ async function fetchItemList(){
         }
 }
 // Function to update server quantity and fetch item list
-async function updateServerQuantity(itemId, newQuantity){
+async function updateQuantity(itemId, newQuantity){
     
     await fetch(`${apiUrl}/data/${itemId}`,{
         method:"Put",
@@ -89,7 +90,6 @@ async function updateServerQuantity(itemId, newQuantity){
             if(!res.ok){
                 console.log("error updating server")
             }
-        // location.reload();
         fetchItemList(); // Fetch the updated item list immediately after an update
         }
     }catch(err){
@@ -98,4 +98,4 @@ async function updateServerQuantity(itemId, newQuantity){
 }
 fetchItemList();
 
-setInterval(fetchItemList, 5000);
+// setInterval(fetchItemList, 5000);

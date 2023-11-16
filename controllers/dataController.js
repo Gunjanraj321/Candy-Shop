@@ -1,67 +1,79 @@
-const connection = require("../database/db")
+const sequelize = require("../util/db");
+const Item = require('../models/item')
 
 const getData = (req, res) => {
-    connection.query('SELECT * FROM items', (err, results) => {
-        if (err) {
-            console.log("error fetching data", err);
-            res.status(500).json({ message: "error while fetching data" });
-        } else {
-            res.json(results);
-        }
-    });
-}
+  Item.findAll()
+    .then((data)=>{
+      //Handle successful read data
+    res.status(201).json(data);
+    }).catch((error)=>{
+      //hanlde error
+      console.error("error occured while reading item", error);
+      res.status(500).json({message:'internal server error'});
+    })
+};
 
 const createData = (req, res) => {
-    const { itemName, description, price } = req.body; 
-    connection.query('INSERT INTO items (itemName, description, price) VALUES (?, ?, ?)',
-        [itemName, description, price],
-        (err, results) => {
-            if (err) {
-                console.error('Error adding item:', err); 
-               res.status(500).json({ error: 'Internal Server Error' });
-            } else {
-                res.status(201).json({ message: 'Item added successfully' });
-            }
-        });
-}
+  const { itemName, description, price , quantity } = req.body;
+  Item.create({
+    itemName:itemName,
+    description:description,
+    price:price,
+    quantity:quantity
+  }).then((data)=> {
+    //Handle successful creation
+    console.log('Item created :',data.toJSON());
+    res.status(201).json({message:"item created successfully"});
+  })
+    .catch((error)=>{
+      //hanlde error
+      console.error("error occured while creating item", error);
+      res.status(500).json({message:'internal server error'});
+    })
+};
 
-const updateData =(req, res) => {
-    const itemId = req.params.id;
-    let newQuantity = req.body.quantity;
-    let quant;
+const updateData = (req, res) => {
+  const itemId = req.params.id;
+  let newQuantity = req.body.quantity;
 
-        connection.query("select quantity from items where id = ?",[itemId],(err,result)=>{
-        result.forEach(data =>{
-            quant=data.quantity;
-        })
-        if(newQuantity>0 && quant >= 0 ){
-            quant+=newQuantity;
-        }
-        else if(newQuantity<0 && quant>0){
-            quant+=newQuantity;  
-        }
-        else if(quant === 0 && newQuantity < 0){
-            connection.query('delete from items where id= ?',[itemId],(err,result)=>{
-                if (err) {
-                    console.error('Error deleting item:', err);
-                    res.status(500).json({ error: 'Internal Server Error' });
-                } else {
-                    res.json({ message: 'Item deleted successfully' });
-                }
-            });
-            return;
-        }
-        connection.query("UPDATE items SET quantity = ? WHERE id = ?",
-        [quant, itemId],
-        (err, results) => {
-            if (err) {
-                console.error('Error updating item quantity:', err); 
-                res.status(500).json({ error: 'Internal Server Error' });
-            } else {
-                res.json({ message: 'Item quantity updated successfully' });
-            }
-        });  
-    }); 
-}
+  connection.query(
+    "select quantity from items where id = ?",
+    [itemId],
+    (err, result) => {
+      if(err){
+        console.error("error while querying")
+        return res.status(500).json({Error:"Internalm server Error"})
+      }
+      if(result.length === 0){
+        return res.status(404).json({error:"Item not found"})
+      }
 
-module.exports = { getData , createData , updateData } ;
+      const currentQuantity = result[0].quantity;
+      const updatedQuantity = currentQuantity + newQuantity;
+
+      if(updatedQuantity < 0){
+        return res.status(400).json({error:"invalid quantity"})
+      }
+
+      const query = updatedQuantity === 0 
+        ? "Delete from items where id =?"
+        : "update items set quantity = ? where id = ? ";
+
+      const params = updatedQuantity === 0 ? [itemId] : [updatedQuantity , itemId];
+
+      connection.query(query , params , (err,result) => {
+        if(err){
+          console.error("error updating/deleting data");
+          res.status(500).json({error:"internal server error"})
+        }else{
+          const message = updatedQuantity === 0
+            ? "Item deleted succesfully" 
+            : "item updated succesfully";
+          res.json({ message })
+        }
+      });
+    }
+  );
+};
+
+module.exports = { getData,createData,updateData };
